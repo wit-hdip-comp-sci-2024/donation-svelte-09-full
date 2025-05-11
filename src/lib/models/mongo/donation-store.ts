@@ -7,12 +7,10 @@ export const donationStore = {
     return donations;
   },
 
-  async findBy(id: string): Promise<Donation | null> {
-    const donation = await DonationMongoose.findOne({ candidate: id });
-    if (!donation) {
-      return null;
-    }
-    return donation;
+  async findBy(candidateId: string): Promise<Donation[]> {
+    const donations = await DonationMongoose.find({ candidate: candidateId }).populate("donor").populate("candidate").lean();
+    console.log(donations);
+    return donations;
   },
 
   async add(donation: Donation): Promise<Donation | null> {

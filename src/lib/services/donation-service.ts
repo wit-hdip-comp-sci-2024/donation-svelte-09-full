@@ -1,10 +1,10 @@
-import type { Session, User } from "$lib/types/donation-types";
+import type { DonationService, Session, User } from "$lib/types/donation-types";
 import type { Candidate, Donation } from "$lib/types/donation-types";
 import { userStore } from "$lib/models/mongo/user-store";
 import { donationStore } from "$lib/models/mongo/donation-store";
 import { candidateStore } from "$lib/models/mongo/candidate-store";
 
-export const donationService = {
+export const donationService: DonationService = {
   async signup(user: User): Promise<boolean> {
     try {
       const newUser = await userStore.add(user);
@@ -52,10 +52,16 @@ export const donationService = {
     }
   },
 
-  async getDonations(): Promise<Donation[]> {
+  async getDonations(candidateId?: string): Promise<Donation[]> {
     try {
-      const donations = await donationStore.find();
-      return JSON.parse(JSON.stringify(donations));
+      if (candidateId) {
+        const donations = await donationStore.findBy(candidateId);
+        console.log(donations);
+        return JSON.parse(JSON.stringify(donations));
+      } else {
+        const donations = await donationStore.find();
+        return JSON.parse(JSON.stringify(donations));
+      }
     } catch (error) {
       return [];
     }
